@@ -12,8 +12,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,6 +36,8 @@ import java.util.List;
  * A placeholder fragment containing a simple view.
  */
 public class ForecastFragment extends Fragment {
+
+    private ArrayAdapter<String> mForecastAdapter;
 
     public ForecastFragment() {
     }
@@ -71,7 +75,7 @@ public class ForecastFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        ArrayAdapter<String> mForecastAdapter;
+
 
         String[] forecastArray = {
                 "Today - Sunny - 77/63",
@@ -94,6 +98,17 @@ public class ForecastFragment extends Fragment {
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+
+                String forecast = mForecastAdapter.getItem(position);
+
+                Toast toast = Toast.makeText(getActivity(), forecast, Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
 
         return rootView;
     }
@@ -288,6 +303,16 @@ public class ForecastFragment extends Fragment {
 
             // This will only happen if there was an error getting or parsing the forecast.
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(String[] result) {
+            if(result!=null){
+                mForecastAdapter.clear();
+                for(String dayForecastStr : result){
+                    mForecastAdapter.add(dayForecastStr);
+                }
+            }
         }
     }
 }
